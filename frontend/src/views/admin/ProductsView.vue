@@ -745,6 +745,14 @@ textarea.finput { resize:vertical; }
 .img-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:#94a3b8; font-size:10px; }
 .url-inp     { font-size:11px !important; padding:6px 8px !important; }
 
+@media (max-width: 600px) {
+  .search-wrap { max-width: 100%; }
+  .pg-header { flex-direction: column; align-items: stretch; }
+  .btn-add { justify-content: center; }
+  .breadcrumb { flex-wrap: wrap; }
+  .detail-header-btns { flex-wrap: wrap; }
+}
+
 /* Tags */
 .tag-picker { display:flex; flex-wrap:wrap; gap:6px; }
 .tag-opt    { display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; font-size:12px; font-weight:600; border:1.5px solid #e2e8f0; cursor:pointer; background:transparent; color:#64748b; transition:all .12s; }

@@ -423,4 +423,12 @@ onUnmounted(() => { barChart?.destroy(); doChart?.destroy() })
 
 /* No data */
 .no-data { text-align:center; padding:40px; color:#94a3b8; font-size:14px; background:#fff; border-radius:14px; }
+
+@media (max-width: 480px) {
+  .kpi-grid  { grid-template-columns: 1fr 1fr; }
+  .order-item { flex-wrap: wrap; }
+  .order-badges { width: 100%; flex-direction: row; gap: 6px; padding-top: 4px; }
+  .top-name { min-width: 70px; font-size: 12px; }
+  .welcome-title { font-size: 16px; }
+}
 </style>

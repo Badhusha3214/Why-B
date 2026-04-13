@@ -1,8 +1,10 @@
 ﻿<script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authStore } from '@/stores/auth'
 
 const router = useRouter()
+const sidebarOpen = ref(false)
 
 const navItems = [
   { label: 'Dashboard',   name: 'dashboard',  icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -26,8 +28,11 @@ function logout() {
 <template>
   <div class="admin-shell">
 
+    <!-- Mobile overlay -->
+    <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ 'sidebar--open': sidebarOpen }">
 
       <!-- Brand -->
       <div class="sidebar-brand">
@@ -47,6 +52,7 @@ function logout() {
           :to="{ name: item.name }"
           class="nav-link"
           :class="{ 'nav-link--active': $route.name === item.name }"
+          @click="sidebarOpen = false"
         >
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path :d="item.icon" />
@@ -76,6 +82,11 @@ function logout() {
     <!-- Main -->
     <div class="main-wrap">
       <header class="topbar">
+        <button class="hamburger-btn" @click="sidebarOpen = !sidebarOpen" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
         <h1 class="topbar-title">{{ String($route.name ?? '').replace(/-/g, ' ') }}</h1>
         <div class="topbar-right">
           <span class="topbar-date">{{ new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) }}</span>
@@ -155,5 +166,30 @@ function logout() {
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 .topbar-date { font-size: 12px; color: #94a3b8; }
 .page-main { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* ── Mobile responsive ── */
+.hamburger-btn {
+  display: none;
+  align-items: center; justify-content: center;
+  width: 36px; height: 36px; flex-shrink: 0;
+  border: none; background: transparent; cursor: pointer;
+  border-radius: 8px; color: #1e293b; margin-right: 4px;
+}
+.hamburger-btn:hover { background: #f1f5f9; }
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 49;
+}
+@media (max-width: 767px) {
+  .admin-shell { display: flex; flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; height: 100vh; z-index: 50;
+    transform: translateX(-100%); transition: transform 0.25s ease;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+  .sidebar--open { transform: translateX(0); }
+  .main-wrap { flex: 1; overflow: visible; min-height: 0; }
+  .page-main { overflow: visible; padding: 16px 12px; }
+  .hamburger-btn { display: flex; }
+}
 </style>
   

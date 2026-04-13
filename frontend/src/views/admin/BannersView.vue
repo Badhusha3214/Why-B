@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { bannersAPI, uploadAPI } from '@/api/index'
 import AppModal from '@/components/admin/AppModal.vue'
@@ -75,8 +75,8 @@ onMounted(async () => { try { await fetch_all() } finally { loading.value = fals
 
     <div v-if="loading" class="text-gray-400 py-10 text-center">Loading...</div>
 
-    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <table class="w-full text-sm">
+    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+      <table class="w-full min-w-max text-sm">
         <thead>
           <tr class="text-left text-xs text-gray-400 border-b border-gray-100 bg-gray-50">
             <th class="px-4 py-3">Image</th>
