@@ -5,7 +5,7 @@ import { authAPI } from '@/api/index'
 import { authStore } from '@/stores/auth'
 
 const router = useRouter()
-const email    = ref('admin@Fris-b.com')
+const email    = ref('admin')
 const password = ref('')
 const error    = ref('')
 const loading  = ref(false)
