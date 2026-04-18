@@ -232,7 +232,7 @@ const statusColor: Record<string, string> = {
                 <div class="addr-icon">📍</div>
                 <div class="addr-info">
                   <p class="addr-label">{{ a.label || 'Address ' + (i + 1) }}</p>
-                  <p class="addr-line">{{ a.street }}, {{ a.city }}, {{ a.state }} {{ a.zip }}</p>
+                  <p class="addr-line">{{ a.street }}, {{ a.city }}, {{ a.state }} {{ a.zipCode }}</p>
                   <p class="addr-line">{{ a.country }}</p>
                 </div>
                 <button class="addr-del" @click="removeAddress(i)">

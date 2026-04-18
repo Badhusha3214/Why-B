@@ -135,7 +135,7 @@ async function placeOrder() {
                 </div>
                 <div>
                   <p class="addr-label">{{ a.label || 'Address ' + (i + 1) }}</p>
-                  <p class="addr-text">{{ a.street }}, {{ a.city }}, {{ a.state }} {{ a.zip }}</p>
+                  <p class="addr-text">{{ a.street }}, {{ a.city }}, {{ a.state }} {{ a.zipCode }}</p>
                   <p class="addr-text">{{ a.country }}</p>
                 </div>
               </div>

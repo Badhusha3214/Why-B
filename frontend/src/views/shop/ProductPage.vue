@@ -94,7 +94,7 @@ const avgRating = computed(() => {
               v-for="(img, i) in product.images" :key="i"
               :src="img" class="gallery-thumb"
               :class="{ 'gallery-thumb--active': mainImg === i }"
-              @click="mainImg = i"
+              @click="mainImg = (i as number)"
             />
           </div>
         </div>
