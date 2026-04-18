@@ -1,35 +1,38 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import ShopLayout  from '@/layouts/ShopLayout.vue'
 import { authStore } from '@/stores/auth'
+import { shopAuth  } from '@/stores/shopAuth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // ── Consumer / Shop (ShopLayout) ──
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('@/views/AboutView.vue'),
-    },
-    {
-      path: '/contact',
-      name: 'contact',
-      component: () => import('@/views/ContactView.vue'),
+      component: ShopLayout,
+      children: [
+        { path: '',              name: 'home',          component: () => import('@/views/shop/HomePage.vue') },
+        { path: 'shop',          name: 'shop',          component: () => import('@/views/shop/ShopPage.vue') },
+        { path: 'shop/:id',      name: 'product',       component: () => import('@/views/shop/ProductPage.vue') },
+        { path: 'cart',          name: 'cart',          component: () => import('@/views/shop/CartPage.vue') },
+        { path: 'checkout',      name: 'checkout',      component: () => import('@/views/shop/CheckoutPage.vue'), meta: { requiresShopAuth: true } },
+        { path: 'login',         name: 'login',         component: () => import('@/views/shop/AuthPage.vue') },
+        { path: 'account',       name: 'account',       component: () => import('@/views/shop/AccountPage.vue'), meta: { requiresShopAuth: true } },
+        { path: 'order-success', name: 'order-success', component: () => import('@/views/shop/OrderSuccessPage.vue') },
+        { path: 'about',         name: 'about',         component: () => import('@/views/AboutView.vue') },
+        { path: 'contact',       name: 'contact',       component: () => import('@/views/ContactView.vue') },
+      ],
     },
 
-    // Admin login (no layout)
+    // ── Admin login (no layout) ──
     {
       path: '/admin/login',
       name: 'admin-login',
       component: () => import('@/views/admin/LoginView.vue'),
     },
 
-    // Admin panel (with layout + auth guard)
+    // ── Admin panel (with AdminLayout + auth guard) ──
     {
       path: '/admin',
       component: AdminLayout,
@@ -55,6 +58,8 @@ router.beforeEach((to, _from, next) => {
     next('/admin/login')
   } else if (to.path === '/admin/login' && authStore.isLoggedIn) {
     next('/admin')
+  } else if (to.meta.requiresShopAuth && !shopAuth.isLoggedIn) {
+    next({ path: '/login', query: { redirect: to.fullPath } })
   } else {
     next()
   }

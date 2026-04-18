@@ -14,20 +14,24 @@ const customerRoutes   = require('./customer.routes');
 const couponRoutes     = require('./coupon.routes');
 const bannerRoutes     = require('./banner.routes');
 const reviewRoutes     = require('./review.routes');
+const shopRoutes       = require('./shop.routes');
 
-// ─── Public: auth ─────────────────────────────────────────────────────────
+// Public: auth
 router.use('/auth', authRoutes);
 
-// ─── Upload (admin only) ──────────────────────────────────────────────────
+// Upload (admin only)
 router.use('/upload', uploadRoutes);
 
-// ─── Public: read-only browsing (products, categories, tags, banners) ────
+// Public: read-only browsing
 router.use('/products',   productRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/tags',       tagRoutes);
 router.use('/banners',    bannerRoutes);
 
-// ─── Admin-only routes (JWT required + role=admin) ────────────────────────
+// Consumer shop routes (JWT required, any role)
+router.use('/shop', shopRoutes);
+
+// Admin-only routes (JWT required + role=admin)
 router.use('/dashboard',  protect, restrictTo('admin'), dashboardRoutes);
 router.use('/components', protect, restrictTo('admin'), componentRoutes);
 router.use('/orders',     protect, restrictTo('admin'), orderRoutes);

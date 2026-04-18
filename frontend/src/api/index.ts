@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { shopAuth } from '@/stores/shopAuth'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1',
@@ -6,7 +7,8 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('admin_token')
+  // Admin token takes priority, then shop token
+  const token = localStorage.getItem('admin_token') || localStorage.getItem('shop_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
@@ -14,10 +16,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
+    const url = error.config?.url ?? ''
     if (error.response?.status === 401) {
-      localStorage.removeItem('admin_token')
-      localStorage.removeItem('admin_user')
-      window.location.href = '/admin/login'
+      if (url.includes('/shop/') || localStorage.getItem('shop_token')) {
+        shopAuth.clearAuth()
+        window.location.href = '/login'
+      } else {
+        localStorage.removeItem('admin_token')
+        localStorage.removeItem('admin_user')
+        window.location.href = '/admin/login'
+      }
     }
     return Promise.reject(error)
   }
@@ -106,3 +114,27 @@ export const uploadAPI = {
 }
 
 export default api
+
+// ── Consumer / Shop API ────────────────────────────────────────────────────
+export const shopAuthAPI = {
+  register: (d: { name: string; email: string; password: string }) => api.post('/auth/register', d),
+  login:    (d: { email: string; password: string })               => api.post('/auth/login', d),
+}
+
+export const shopAPI = {
+  getMe:          ()                  => api.get('/shop/me'),
+  updateMe:       (d: object)         => api.patch('/shop/me', d),
+  getMyOrders:    ()                  => api.get('/shop/orders'),
+  createOrder:    (d: object)         => api.post('/shop/orders', d),
+  validateCoupon: (code: string)      => api.get(`/shop/coupon/${code}`),
+  submitReview:   (d: object)         => api.post('/shop/reviews', d),
+}
+
+export const publicAPI = {
+  getProducts:    (p?: object)        => api.get('/products',   { params: p }),
+  getProduct:     (id: string)        => api.get(`/products/${id}`),
+  getCategories:  ()                  => api.get('/categories'),
+  getTags:        ()                  => api.get('/tags'),
+  getBanners:     (p?: object)        => api.get('/banners',    { params: p }),
+  getReviews:     (p?: object)        => api.get('/reviews',    { params: p }),
+}
