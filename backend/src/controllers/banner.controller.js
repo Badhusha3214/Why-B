@@ -29,7 +29,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const item = await Banner.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const item = await Banner.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after', runValidators: true });
     if (!item) return next(new AppError('Banner not found', 404));
     res.status(200).json({ status: 'success', data: item });
   } catch (err) { next(err); }

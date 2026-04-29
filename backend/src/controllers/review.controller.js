@@ -33,7 +33,7 @@ exports.updateStatus = async (req, res, next) => {
     const item = await Review.findByIdAndUpdate(
       req.params.id,
       { status, ...(adminReply !== undefined && { adminReply }) },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
     if (!item) return next(new AppError('Review not found', 404));
     res.status(200).json({ status: 'success', data: item });

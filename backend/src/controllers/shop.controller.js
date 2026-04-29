@@ -27,7 +27,7 @@ exports.updateMe = async (req, res, next) => {
     const customer = await Customer.findOneAndUpdate(
       { email: req.user.email },
       { ...(name && { name }), ...(phone !== undefined && { phone }), ...(addresses && { addresses }) },
-      { new: true, upsert: true, runValidators: true }
+      { returnDocument: 'after', upsert: true, runValidators: true }
     );
     res.status(200).json({ status: 'success', data: customer });
   } catch (err) { next(err); }

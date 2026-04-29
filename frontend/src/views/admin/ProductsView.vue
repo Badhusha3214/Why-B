@@ -100,7 +100,7 @@ async function uploadImage(idx: number, file: File) {
   imgLoading.value[idx] = true
   try {
     const res = await uploadAPI.uploadImage(file)
-    imageUrls.value[idx] = 'http://localhost:3000' + res.data.url
+    imageUrls.value[idx] = res.data.url
   } catch { } finally { imgLoading.value[idx] = false }
 }
 

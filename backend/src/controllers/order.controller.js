@@ -34,7 +34,7 @@ exports.getOne = async (req, res, next) => {
 exports.updateStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
-    const item = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true });
+    const item = await Order.findByIdAndUpdate(req.params.id, { status }, { returnDocument: 'after', runValidators: true });
     if (!item) return next(new AppError('Order not found', 404));
     res.status(200).json({ status: 'success', data: item });
   } catch (err) { next(err); }
@@ -43,7 +43,7 @@ exports.updateStatus = async (req, res, next) => {
 exports.updatePaymentStatus = async (req, res, next) => {
   try {
     const { paymentStatus } = req.body;
-    const item = await Order.findByIdAndUpdate(req.params.id, { paymentStatus }, { new: true, runValidators: true });
+    const item = await Order.findByIdAndUpdate(req.params.id, { paymentStatus }, { returnDocument: 'after', runValidators: true });
     if (!item) return next(new AppError('Order not found', 404));
     res.status(200).json({ status: 'success', data: item });
   } catch (err) { next(err); }

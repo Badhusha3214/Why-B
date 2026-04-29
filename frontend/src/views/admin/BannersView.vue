@@ -35,7 +35,7 @@ async function pickImage() {
     imgLoading.value = true
     try {
       const res = await uploadAPI.uploadImage(file)
-      form.value.image = 'http://localhost:3000' + res.data.url
+      form.value.image = res.data.url
     } finally { imgLoading.value = false }
   }
   input.click()

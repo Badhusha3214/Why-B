@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { categoriesAPI } from '@/api/index'
+import { categoriesAPI, uploadAPI } from '@/api/index'
 import AppModal from '@/components/admin/AppModal.vue'
 
-interface Category { _id: string; name: string; description: string; status: string; parent?: any }
+interface Category { _id: string; name: string; description: string; status: string; image?: string; parent?: any }
 
 const items       = ref<Category[]>([])
 const loading     = ref(true)
@@ -12,16 +12,33 @@ const deleteModal = ref(false)
 const deleteId    = ref('')
 const editing     = ref<Category | null>(null)
 const saving      = ref(false)
-const form        = ref({ name: '', description: '', status: 'active', parent: '' })
+const imgLoading  = ref(false)
+const form        = ref({ name: '', description: '', status: 'active', parent: '', image: '' })
 
-function openAdd()        { editing.value = null; form.value = { name: '', description: '', status: 'active', parent: '' }; showModal.value = true }
-function openEdit(c: Category) { editing.value = c; form.value = { name: c.name, description: c.description, status: c.status, parent: c.parent?._id ?? c.parent ?? '' }; showModal.value = true }
+function openAdd()        { editing.value = null; form.value = { name: '', description: '', status: 'active', parent: '', image: '' }; showModal.value = true }
+function openEdit(c: Category) { editing.value = c; form.value = { name: c.name, description: c.description, status: c.status, parent: c.parent?._id ?? c.parent ?? '', image: c.image ?? '' }; showModal.value = true }
+
+async function pickImage() {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0]
+    if (!file) return
+    imgLoading.value = true
+    try {
+      const res = await uploadAPI.uploadImage(file)
+      form.value.image = res.data.url
+    } finally { imgLoading.value = false }
+  }
+  input.click()
+}
 function askDelete(id: string) { deleteId.value = id; deleteModal.value = true }
 
 async function save() {
   saving.value = true
   try {
-    const payload = { ...form.value, parent: form.value.parent || undefined }
+    const payload = { ...form.value, parent: form.value.parent || undefined, image: form.value.image || undefined }
     if (editing.value) await categoriesAPI.update(editing.value._id, payload)
     else               await categoriesAPI.create(payload)
     await fetch_all()
@@ -84,6 +101,17 @@ onMounted(async () => { try { await fetch_all() } finally { loading.value = fals
     <!-- Form Modal -->
     <AppModal v-if="showModal" :title="editing ? 'Edit Category' : 'Add Category'" @close="showModal = false">
       <form @submit.prevent="save" class="p-4 space-y-4">
+        <div>
+          <label class="label">Image</label>
+          <div class="flex items-center gap-3">
+            <div class="h-20 w-28 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50 cursor-pointer" @click="pickImage">
+              <img v-if="form.image" :src="form.image" class="w-full h-full object-cover" />
+              <span v-else-if="imgLoading" class="text-xs text-gray-400">Uploading...</span>
+              <span v-else class="text-xs text-gray-400">Click</span>
+            </div>
+            <input v-model="form.image" class="input flex-1" placeholder="or paste URL" type="url" />
+          </div>
+        </div>
         <div>
           <label class="label">Name *</label>
           <input v-model="form.name" required class="input" />

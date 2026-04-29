@@ -103,13 +103,20 @@ export const reviewsAPI = {
 }
 
 export const uploadAPI = {
-  // Upload a single image file; returns { url: '/uploads/filename.jpg' }
-  uploadImage: (file: File) => {
-    const form = new FormData()
-    form.append('image', file)
-    return api.post<{ status: string; url: string }>('/upload', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+  // 1. Get a presigned PUT URL + final public URL from the backend (admin-only)
+  // 2. PUT the file directly to R2 using the presigned URL (no server bandwidth)
+  uploadImage: async (file: File): Promise<{ data: { status: string; url: string } }> => {
+    const presignRes = await api.get<{ status: string; presignedUrl: string; url: string }>(
+      '/upload/presign',
+      { params: { contentType: file.type } }
+    )
+    const { presignedUrl, url } = presignRes.data
+    await fetch(presignedUrl, {
+      method:  'PUT',
+      body:    file,
+      headers: { 'Content-Type': file.type },
     })
+    return { data: { status: 'success', url } }
   },
 }
 

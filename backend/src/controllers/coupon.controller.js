@@ -39,7 +39,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const item = await Coupon.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const item = await Coupon.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after', runValidators: true });
     if (!item) return next(new AppError('Coupon not found', 404));
     res.status(200).json({ status: 'success', data: item });
   } catch (err) { next(err); }
